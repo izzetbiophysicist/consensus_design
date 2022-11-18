@@ -1,5 +1,5 @@
 # cosensus_design
-pyRosetta script for consensus protein design
+Script using pyRosetta for consensus protein design
 
 # Usage
 
