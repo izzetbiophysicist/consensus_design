@@ -1,7 +1,7 @@
 # cosensus_design
 pyRosetta script for consensus protein design
 
-#Usage
+# Usage
 
 python3.8 consensus.py --pdb--alignment --out --cons_thresh
 
