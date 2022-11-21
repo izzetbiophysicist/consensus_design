@@ -1,22 +1,13 @@
 from pyrosetta import *
 from Bio import AlignIO
 from statistics import mode
-## Secondary libs
 import argparse
 
 pyrosetta.init()
 
-         
-## Usage
-# pose = Pose
-# posi = Position to mutate (input pose index)
-# amino = Aminoacid to mutate ("G")
-# scorefxn = score function beeing used
 
 scorefxn = pyrosetta.create_score_function("ref2015_cart.wts")
 
-
-## Function to point mutation and apply FastRelax to pose
 def consensus_design(pose, consensus, scorefxn):
     
     for position in range(len(consensus)):
