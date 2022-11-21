@@ -1,44 +1,7 @@
-# -*- coding: utf-8 -*-
-"""
-Spyder Editor
-
-This is a temporary script file.
-"""
-
 from pyrosetta import *
 from Bio import AlignIO
 from statistics import mode
-from rosetta.protocols import minimization_packing as pack_min
-from rosetta.protocols import relax as rel
-from rosetta.protocols.antibody.residue_selector import CDRResidueSelector
-from rosetta.protocols.antibody import *
-from rosetta.protocols.loops import *
-from rosetta.protocols.relax import FastRelax
-from pyrosetta import *
-from pyrosetta.teaching import *
-from pyrosetta.toolbox import cleanATOM
-from pyrosetta.teaching import *
-import time as time_module
-from pyrosetta import PyMOLMover
-import pyrosetta
-import pyrosetta.rosetta as rosetta
-from pyrosetta.rosetta.protocols.docking import setup_foldtree
-from rosetta.protocols import minimization_packing as pack_min
-from rosetta.core.simple_metrics import metrics
-from rosetta.core.select import residue_selector as selections
-from rosetta.protocols.scoring import Interface
-from pyrosetta.rosetta.core.scoring import *
-from pyrosetta.rosetta.protocols.relax import FastRelax
-import pyrosetta.rosetta.protocols.rigid as rigid_moves
-from pyrosetta.rosetta.core.pack.task import *
-from pyrosetta.rosetta.protocols import *
-from pyrosetta.rosetta.core.select import *
-from rosetta.core.pack.task import TaskFactory
-from rosetta.core.select import residue_selector as selections
-from rosetta.core import select
-from pyrosetta.bindings.energies import *
 ## Secondary libs
-import os
 import argparse
 
 pyrosetta.init()
@@ -221,6 +184,10 @@ if __name__ == "__main__":
 
 
     pose.dump_pdb(args.out)
+
+
+    
+
 
 
     
