@@ -2,13 +2,47 @@ from pyrosetta import *
 from Bio import AlignIO
 from statistics import mode
 import argparse
+from rosetta.core.pack.task import TaskFactory
+from rosetta.core.pack.task import operation
 
 pyrosetta.init()
 
 
 scorefxn = pyrosetta.create_score_function("ref2015_cart.wts")
 
+def pack_relax(pose, scorefxn):
+
+    tf = TaskFactory()
+    tf.push_back(operation.InitializeFromCommandline())
+    tf.push_back(operation.RestrictToRepacking())
+    # Set up a MoveMapFactory
+    mmf = pyrosetta.rosetta.core.select.movemap.MoveMapFactory()
+    mmf.all_bb(setting=True)
+    mmf.all_bondangles(setting=True)
+    mmf.all_bondlengths(setting=True)
+    mmf.all_chi(setting=True)
+    mmf.all_jumps(setting=True)
+    mmf.set_cartesian(setting=True)
+
+    ## Print informations about structure before apply fast relax
+    # display_pose = pyrosetta.rosetta.protocols.fold_from_loops.movers.DisplayPoseLabelsMover()
+    # display_pose.tasks(tf)
+    # display_pose.movemap_factory(mmf)
+    # display_pose.apply(pose)
+
+    fr = pyrosetta.rosetta.protocols.relax.FastRelax(scorefxn_in=scorefxn, standard_repeats=1)
+    fr.cartesian(True)
+    fr.set_task_factory(tf)
+    fr.set_movemap_factory(mmf)
+    fr.min_type("lbfgs_armijo_nonmonotone")
+    fr.apply(pose)
+    return pose
+
+
 def consensus_design(pose, consensus, scorefxn, design):
+    
+    pose = pack_relax(pose, scorefxn)
+
     
     for position in range(len(consensus)):
         
@@ -54,24 +88,7 @@ def consensus_design(pose, consensus, scorefxn, design):
             packer.task_factory(tf) 
             packer.apply(pose)
     
-    
-        #FastRelax Protocol
-    mmf = pyrosetta.rosetta.core.select.movemap.MoveMapFactory()
-    mmf.all_bb(setting=True)
-    mmf.all_bondangles(setting=True)
-    mmf.all_bondlengths(setting=True)
-    mmf.all_chi(setting=True)
-    mmf.all_jumps(setting=True)
-    mmf.set_cartesian(setting=True)
-    
-    fr = pyrosetta.rosetta.protocols.relax.FastRelax(scorefxn_in=scorefxn, standard_repeats=1)
-    fr.cartesian(True)
-    fr.set_task_factory(tf)
-    fr.set_movemap_factory(mmf)
-    fr.min_type("lbfgs_armijo_nonmonotone")
-      
-    #### First relax
-    fr.apply(pose)
+    ### Relax
     
     if design == True:
         ################### Design residues with no significant consensus
@@ -79,6 +96,7 @@ def consensus_design(pose, consensus, scorefxn, design):
         mut_posi = pyrosetta.rosetta.core.select.residue_selector.ResidueIndexSelector()
         
         
+        ### Calculate N gap
         n_gap = 0
         for position in range(len(consensus)):
             if consensus[position] == '-':
@@ -129,9 +147,10 @@ def consensus_design(pose, consensus, scorefxn, design):
             
             packer.apply(pose)
             
-            ### Second relax
+        ### Second relax
             
-        fr.apply(pose)
+    pose = pack_relax(pose, scorefxn)
+
     
     return pose
 
