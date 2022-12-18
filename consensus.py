@@ -162,9 +162,7 @@ def get_consensus(alignment, cv_thresh, pose):
     for pos in range(al):
         column = []
         if alignment[0][pos] != '-':
-            for align in alignment:
-                if align[pos] != '-':
-                    column.append(align[pos])
+            column = [align[pos] for align in alignment if align[pos] != '-']
             ### verify percentage and thresholds
             mode_count = 0
             for i in range(len(column)):
