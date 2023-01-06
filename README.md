@@ -18,9 +18,10 @@ python3.8 design_scan.py --pdb  --design  --db  --n_designs --csv_out
 
 --design = True or False. If True, residues without consensus will be designed by rosetta design function, if False they will be kept as found in the reference structure
 
-## consensus_module.py contains the individual functions for bespoke consensus design
+## consensus_module.py contains all the individual functions for bespoke consensus design
 
 get_consensus = generates a consensus sequence given an alignment, the structure and the consensus threshold
+
 consensus_design = Given a structure and a consensus sequence, carries out the consensus design. Can be used with or without the design option. If design = True, all residues without consensus will be designed using Rosetta design
 
 
