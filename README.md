@@ -1,4 +1,4 @@
-# cosensus_design
+# consensus_design
 Scripts for consensus protein design using pyRosetta
 
 # Usage
@@ -23,5 +23,9 @@ python3.8 design_scan.py --pdb  --design  --db  --n_designs --csv_out
 get_consensus = generates a consensus sequence given an alignment, the structure and the consensus threshold
 
 consensus_design = Given a structure and a consensus sequence, carries out the consensus design. Can be used with or without the design option. If design is set to True, all residues without consensus will be designed using Rosetta design
+
+# Dependencies
+
+consensus_design runs clustalo and blast locally
 
 
