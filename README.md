@@ -3,7 +3,7 @@ Script using pyRosetta for consensus protein design
 
 # Usage
 
-### Design scan will explore all identity thresholds and all consensus thresholds for a given alingment
+# Design scan will explore all identity thresholds and all consensus thresholds for a given alingment
 
 python3.8 design_scan.py --pdb  --design  --db  --n_designs --csv_out 
 
