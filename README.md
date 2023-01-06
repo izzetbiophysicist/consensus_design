@@ -26,6 +26,6 @@ consensus_design = Given a structure and a consensus sequence, carries out the c
 
 # Dependencies
 
-consensus_design runs clustalo and blast locally
+consensus_design runs clustal and blast locally
 
 
