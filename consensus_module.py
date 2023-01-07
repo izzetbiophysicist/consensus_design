@@ -146,19 +146,14 @@ def consensus_design(pose, consensus, scorefxn, design):
     
     if design == True:
         ################### Design residues with no significant consensus
-        to_design = []
         
+        to_design = [position+1 for position in range(len(consensus)) if consensus[position] == '-']
         
         ### Calculate N gap
         n_gap = 0
         for position in range(len(consensus)):
             if consensus[position] == '-':
-                n_gap = n_gap+1
-                #posi = pose.pdb_info().number(position+1)
-                posi = position+1
-                #### Print selected residues for mut posi
-                #print(pyrosetta.rosetta.core.select.get_residues_from_subset(mut_posi.apply(pose)))
-                to_design.append(posi)
+                n_gap += 1
                 
         if n_gap != 0:
             pose = design(pose, scorefxn, to_design)
