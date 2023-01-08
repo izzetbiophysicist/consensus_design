@@ -95,12 +95,14 @@ if __name__ == "__main__":
 
     ## take arguments    
     db = args.db
-    pose = pose_from_pdb(args.pdb)
     design = args.design
     n_designs = args.n_designs
     csv_file = args.csv_out
+    
+    ### Load pose
+    pose = pose_from_pdb(args.pdb)
 
-
+    
     ### run blast
     querry='seedprot.fasta'
 
@@ -117,9 +119,13 @@ if __name__ == "__main__":
     
     for design_number in range(n_designs):
         
+        #### reloading pose each loop because in previous tests the pose object is being modified - find leakage
+        
+        pose = pose_from_pdb(args.pdb)
+        
         pose_relax = pack_relax(pose, scorefxn)
         pose_relax.dump_pdb('./structures/relax_'+str(design_number)+'.pdb')
-        #pose = pose_from_pdb('./structures/relax_'+str(n_designs)+'.pdb')
+        #pose_relax = pose_from_pdb('./structures/relax_'+str(n_designs)+'.pdb')
 
         
         relax_data = pd.DataFrame({'consensus sequence':'relaxed original structure','final sequence':pose_relax.sequence(),'consensus threshold':'relaxed original structure', 'identity threshold':'relaxed original structure', 'number of sequences':'relaxed original structure', 'rosetta score':scorefxn(pose_relax), 'design':'relaxed original structure', 'design number':'relaxed original structure '+ str(design_number)}, index=[0])
