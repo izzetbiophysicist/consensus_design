@@ -20,6 +20,7 @@ from Bio import SeqIO
 
 pyrosetta.init()
 
+
 os.system("mkdir ./structures")
 
 ## Params
@@ -89,7 +90,7 @@ if __name__ == "__main__":
     parser.add_argument('--design', type=str, required=True) ## design or not
     parser.add_argument('--n_designs', type=int, required=True) ## number of designs to generate for each combinations of parameters
     parser.add_argument('--csv_out', type=str, required=True) ## number of designs to generate for each combinations of parameters
-
+    
 
     args = parser.parse_args()
 
@@ -99,9 +100,8 @@ if __name__ == "__main__":
     n_designs = args.n_designs
     csv_file = args.csv_out
     
-    ### Load pose
+    ### Open here for running blast
     pose = pose_from_pdb(args.pdb)
-
     
     ### run blast
     querry='seedprot.fasta'
@@ -114,17 +114,19 @@ if __name__ == "__main__":
     ### run scan
     cons_vec = [round(x*0.1,1) for x in range(11)]
     id_vec = [x*10 for x in range(11)]                
-    final_data = pd.DataFrame({'consensus sequence':'original structure','final sequence':pose.sequence(),'consensus threshold':'original structure', 'identity threshold':'relaxed original structure', 'number of sequences':'relaxed original structure', 'rosetta score':scorefxn(pose), 'design':'original structure', 'design number':'original structure'}, index=[0])
+    final_data = pd.DataFrame(columns=['consensus sequence','final sequence','consensus threshold', 'identity threshold', 'number of sequences', 'rosetta score', 'design', 'design number'])
 
     
     for design_number in range(n_designs):
         
         #### reloading pose each loop because in previous tests the pose object is being modified - find leakage
         
-        pose = pose_from_pdb(args.pdb)
         
-        pose_relax = pack_relax(pose, scorefxn)
-        pose_relax.dump_pdb('./structures/relax_'+str(design_number)+'.pdb')
+        ### load relaxed pose
+        pose_relax = pose_from_pdb(args.pdb)
+        
+        #pose_relax = pack_relax(pose, scorefxn)
+        #pose_relax.dump_pdb('./structures/relax_'+str(design_number)+'.pdb')
         #pose_relax = pose_from_pdb('./structures/relax_'+str(n_designs)+'.pdb')
 
         
