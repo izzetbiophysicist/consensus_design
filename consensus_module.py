@@ -127,7 +127,7 @@ def design(pose, scorefxn, to_design):
     return pose
 
 
-def consensus_design(pose, consensus, scorefxn, design):
+def consensus_design(pose, consensus, scorefxn, design_undef):
     
     
     for position in range(len(consensus)):
@@ -144,7 +144,7 @@ def consensus_design(pose, consensus, scorefxn, design):
     
     ### Relax
     
-    if design == True:
+    if design_undef == "yes":
         ################### Design residues with no significant consensus
         
         to_design = [position+1 for position in range(len(consensus)) if consensus[position] == '-']
@@ -156,6 +156,7 @@ def consensus_design(pose, consensus, scorefxn, design):
                 n_gap += 1
                 
         if n_gap != 0:
+            print('designing')
             pose = design(pose, scorefxn, to_design)
             
             
