@@ -24,7 +24,7 @@ pyrosetta.init()
 os.system("mkdir ./structures")
 
 ## Params
-def consensus_steps(id_thresh, cv_thresh, design, pose):
+def consensus_steps(id_thresh, cv_thresh, design_undef, pose):
             
     ### read blast results
     blast = pd.read_table("blastp.txt", header=None)
@@ -60,13 +60,13 @@ def consensus_steps(id_thresh, cv_thresh, design, pose):
     ### Generate consensus sequence
     consensus = get_consensus(alignment, cv_thresh, pose)
         
-    pose_consensus = consensus_design(pose, consensus, scorefxn, design)    
+    pose_consensus = consensus_design(pose, consensus, scorefxn, design_undef)    
     
     
     
     #### create pandas dataframe with the whole scan
     
-    design_result = pd.DataFrame({'consensus sequence':''.join(consensus),'final sequence':pose_consensus.sequence(),'consensus threshold':cv_thresh, 'identity threshold':id_thresh, 'number of sequences':len(alignment), 'rosetta score':scorefxn(pose_consensus), 'design':str(design), 'design number':'NA'}, index=[0])
+    design_result = pd.DataFrame({'consensus sequence':''.join(consensus),'final sequence':pose_consensus.sequence(),'consensus threshold':cv_thresh, 'identity threshold':id_thresh, 'number of sequences':len(alignment), 'rosetta score':scorefxn(pose_consensus), 'design_undef':str(design_undef), 'design number':'NA'}, index=[0])
         
     return design_result, pose_consensus
 
@@ -87,7 +87,7 @@ if __name__ == "__main__":
     
     parser.add_argument('--pdb', type=str, required=True)
     parser.add_argument('--db', type=str, required=True)  ### multifasta for building blast database
-    parser.add_argument('--design', type=str, required=True) ## design or not
+    parser.add_argument('--design_undef', type=str, required=True) ## design or not
     parser.add_argument('--n_designs', type=int, required=True) ## number of designs to generate for each combinations of parameters
     parser.add_argument('--csv_out', type=str, required=True) ## number of designs to generate for each combinations of parameters
     
@@ -96,7 +96,7 @@ if __name__ == "__main__":
 
     ## take arguments    
     db = args.db
-    design = args.design
+    design_undef = args.design_undef
     n_designs = args.n_designs
     csv_file = args.csv_out
     
@@ -114,7 +114,7 @@ if __name__ == "__main__":
     ### run scan
     cons_vec = [round(x*0.1,1) for x in range(11)]
     id_vec = [x*10 for x in range(11)]                
-    final_data = pd.DataFrame(columns=['consensus sequence','final sequence','consensus threshold', 'identity threshold', 'number of sequences', 'rosetta score', 'design', 'design number'])
+    final_data = pd.DataFrame(columns=['consensus sequence','final sequence','consensus threshold', 'identity threshold', 'number of sequences', 'rosetta score', 'design_undef', 'design number'])
 
     
     for design_number in range(n_designs):
@@ -123,25 +123,27 @@ if __name__ == "__main__":
         
         
         ### load relaxed pose
-        pose_relax = pose_from_pdb(args.pdb)
         
         #pose_relax = pack_relax(pose, scorefxn)
         #pose_relax.dump_pdb('./structures/relax_'+str(design_number)+'.pdb')
         #pose_relax = pose_from_pdb('./structures/relax_'+str(n_designs)+'.pdb')
+        pose_relax = pose_from_pdb(args.pdb)
 
         
-        relax_data = pd.DataFrame({'consensus sequence':'relaxed original structure','final sequence':pose_relax.sequence(),'consensus threshold':'relaxed original structure', 'identity threshold':'relaxed original structure', 'number of sequences':'relaxed original structure', 'rosetta score':scorefxn(pose_relax), 'design':'relaxed original structure', 'design number':'relaxed original structure '+ str(design_number)}, index=[0])
+        relax_data = pd.DataFrame({'consensus sequence':'relaxed original structure','final sequence':pose_relax.sequence(),'consensus threshold':'relaxed original structure', 'identity threshold':'relaxed original structure', 'number of sequences':'relaxed original structure', 'rosetta score':scorefxn(pose_relax), 'design_undef':'relaxed original structure', 'design number':'relaxed original structure '+ str(design_number)}, index=[0])
         final_data = final_data.append(relax_data)
 
         for cv_thresh in cons_vec:
             for id_thresh in id_vec:
                     
                 ## relax and dump
-                
-                consensus_result = consensus_steps(id_thresh, cv_thresh, design, pose_relax)
+                pose_relax = pose_from_pdb(args.pdb)
+
+
+                consensus_result = consensus_steps(id_thresh, cv_thresh, design_undef, pose_relax)
                 pose_consensus = consensus_result[1]
                 
-                pose_consensus.dump_pdb('./structures/design_cons_'+str(cv_thresh)+'_id_'+str(id_thresh)+"_design_"+str(design)+"_experiment_"+str(design_number)+".pdb") ##### NAME POSE
+                pose_consensus.dump_pdb('./structures/design_cons_'+str(cv_thresh)+'_id_'+str(id_thresh)+"_design_"+str(design_undef)+"_experiment_"+str(design_number)+".pdb") ##### NAME POSE
     
                 new_entry = consensus_result[0]
                 
