@@ -5,7 +5,7 @@ Scripts for consensus protein design using pyRosetta
 
 ## Design scan will explore all identity thresholds and all consensus thresholds for a given alingment
 
-python3.8 design_scan.py --pdb  --design  --db  --n_designs --csv_out 
+python3.8 design_scan.py --pdb  --design_undef  --db  --n_designs --csv_out 
 
 
 --pdb = PDB structure of the protein to be designed
@@ -16,7 +16,7 @@ python3.8 design_scan.py --pdb  --design  --db  --n_designs --csv_out
 
 --n_designs = number of designs for each combination of identity and consensus thresholds
 
---design = True or False. If True, residues without consensus will be designed by rosetta design function, if False they will be kept as found in the reference structure
+--design_undef = yes or no. If "yes", residues without consensus will be designed by rosetta design function, if False they will be kept as found in the reference structure
 
 ## consensus_module.py contains all the individual functions for bespoke consensus design
 
