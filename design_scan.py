@@ -24,8 +24,10 @@ pyrosetta.init()
 os.system("mkdir ./structures")
 
 ## Params
-def consensus_steps(id_thresh, cv_thresh, design_undef, pose):
-            
+def consensus_steps(id_thresh, cv_thresh, design_undef, pose_in):
+    
+    pose = pose_in.clone()
+    
     ### read blast results
     blast = pd.read_table("blastp.txt", header=None)
     overcutoff = [x for x in range(len(blast[2])) if blast[2][x] >= id_thresh if blast[2][x] != 100]
@@ -87,7 +89,7 @@ if __name__ == "__main__":
     
     parser.add_argument('--pdb', type=str, required=True)
     parser.add_argument('--db', type=str, required=True)  ### multifasta for building blast database
-    parser.add_argument('--design_undef', type=str, required=True) ## design or not
+    parser.add_argument('--design_undef', type=int, required=True) ## design or not
     parser.add_argument('--n_designs', type=int, required=True) ## number of designs to generate for each combinations of parameters
     parser.add_argument('--csv_out', type=str, required=True) ## number of designs to generate for each combinations of parameters
     
@@ -133,14 +135,15 @@ if __name__ == "__main__":
         relax_data = pd.DataFrame({'consensus sequence':'relaxed original structure','final sequence':pose_relax.sequence(),'consensus threshold':'relaxed original structure', 'identity threshold':'relaxed original structure', 'number of sequences':'relaxed original structure', 'rosetta score':scorefxn(pose_relax), 'design_undef':'relaxed original structure', 'design number':'relaxed original structure '+ str(design_number)}, index=[0])
         final_data = final_data.append(relax_data)
 
-        for cv_thresh in cons_vec:
-            for id_thresh in id_vec:
+        for id_thresh in id_vec:
+            for cv_thresh in cons_vec:
+            
                     
                 ## relax and dump
-                pose_relax = pose_from_pdb(args.pdb)
+                #pose_relax = pose_from_pdb(args.pdb)
+                clone = pose_relax.clone()
 
-
-                consensus_result = consensus_steps(id_thresh, cv_thresh, design_undef, pose_relax)
+                consensus_result = consensus_steps(id_thresh, cv_thresh, design_undef, clone)
                 pose_consensus = consensus_result[1]
                 
                 pose_consensus.dump_pdb('./structures/design_cons_'+str(cv_thresh)+'_id_'+str(id_thresh)+"_design_"+str(design_undef)+"_experiment_"+str(design_number)+".pdb") ##### NAME POSE
